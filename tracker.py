@@ -16,7 +16,7 @@ def generate_metainfo(name, file_len):
     for i in range(0, file_len, 8):
         pieces.append(i)
     with open(f'{name}.torrent', 'w') as file:
-        file.write(f'{{url: {{name: {name}, piece_length: {p_len}, pieces: {pieces}, length: {file_len}}}}}')
+        file.write(f'{{announce: (\'127.0.0.1\', {tr_port}), info: {{name: {name}, piece_length: {p_len}, pieces: {pieces}, length: {file_len}}}}}')
 
 def discover_peer():
     while 1:
@@ -26,8 +26,8 @@ def discover_peer():
 
 def main():
     generate_metainfo('spiderman', 64)
-    discover_thread = Thread(target=discover_peer, daemon=True)
-    discover_thread.start()
+    # discover_thread = Thread(target=discover_peer, daemon=True)
+    # discover_thread.start()
 
 
 if __name__ == '__main__':
