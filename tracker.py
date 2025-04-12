@@ -9,13 +9,14 @@ sock.bind(('127.0.0.1', tr_port))
 p_len = 8
 seeders = {}
 file_pieces = {}
-current_dl_peer = ()
+dl_peers = []
+dling_peers = []
 wait = 5
 
 
 def generate_metainfo(name, file_len):
     pieces = []
-    for i in range(0, file_len, 8):
+    for i in range(0, file_len, p_len):
         pieces.append(i)
     file_pieces[name] = pieces
     with open(f'{name}.torrent', 'w') as file:
@@ -23,29 +24,32 @@ def generate_metainfo(name, file_len):
 
 
 def discover_peer():
-    global current_dl_peer
+    # global current_dl_peer
     while 1:
         pkt, _ = sock.recvfrom(100)
-        print(pkt)
         port, name, received, = pkt.decode().split('|')
-        received = received.split(',')
+        received = received[1:-1].split(', ')
         seeders[port] = (name, received)
-        current_dl_peer = (port, name, received)
+        # print(port, name, received)
+        dl_peers.append((port, name, received))
 
 
 def match_peers(dl_peer):
     dl_port, dl_name, dl_recv = dl_peer
+    # file pieces that dl_peer needs
     needed = set(file_pieces[dl_name]) - set(dl_recv)
+    # print(needed)
     for port, (name, received) in seeders.items():
-        received = received.split(',')
         if (port, name, received) == dl_peer or name != dl_name:
             continue
         if set(received) & needed:
+            print(f'matching {dl_port} with {port}')
             info = f'{port}|{name}|{received}'.encode()
             addr = ('127.0.0.1', dl_port)
             sock.sendto(info, addr)
-            return 1
-    return 0
+            time.sleep(wait)
+            break
+    
 
 
 def main():
@@ -54,9 +58,14 @@ def main():
     discover_thread.start()
 
     while 1:
-        if current_dl_peer:
-            match_peers(current_dl_peer)
-        # time.sleep(wait)
+        print(f'Peers Downloading: {dling_peers}')
+        if dl_peers:
+            current_peer = dl_peers.pop(0)
+            if current_peer not in dling_peers:
+                dling_peers.append(current_peer)
+            match_thread = Thread(target=match_peers, args=(current_peer,), daemon=True)
+            match_thread.start()
+        time.sleep(wait)
 
 
 if __name__ == '__main__':
