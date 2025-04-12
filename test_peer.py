@@ -6,8 +6,8 @@ import threading
 import time 
 
 host = "127.0.0.1"
-received_file = {}
-received_index = []
+received_file = {"spiderma", "spiderma", "spiderma", "spiderma", "spiderma", "spiderma","spiderma","spiderma"}
+received_index = [0, 8, 16, 24, 32, 40, 48, 56]
 def main(port, fileName, metainfo):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         #First check if the port can be bound
@@ -29,8 +29,7 @@ def main(port, fileName, metainfo):
         fixed_str = re.sub(r':\s*([a-zA-Z_][a-zA-Z0-9_]*)(\s*[,}])', r': "\1"\2', fixed_str)
         try:
             # ast.literal_eval safely evaluates the string to a dictionary
-            result_dict = ast.literal_eval(fixed_str)
-           
+            result_dict = ast.literal_eval(fixed_str) 
         except Exception as e:
             print("Error parsing dictionary:", e)
             return None
@@ -41,21 +40,35 @@ def main(port, fileName, metainfo):
         server_ip = trackerInfo[0]  
         server_port = trackerInfo[1]     
     # Create a thread that will run the connect_to_server function
-        connection_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port , fileName, received_index, sock), daemon=True)
-        # Start the thread
-        connection_thread.start()
-        # Optionally, wait for the thread to finish
-        connection_thread.join()
-
+    #Set the listening port to whatever the user specifies + 1
+        startBroadcast(server_ip, server_port, port + 1 , fileName, received_index, sock)
+        
+        print("here")
+        startListening(port + 1)
+        
         #Once I Bind to port get the Tracker URL from the metaInfo
         #The broadcast should be on a timer which I repetedly => 10 seconds, and on every receive
         #I need a thread that is open and listening for file parts
         #Once I read in a file I validate it, update my recieved_file to 
         #Update the dictionary: the key is the index , the value is the actual fiel 
-        
-        
+        try:
+            while True:
+                time.sleep(3)
+        except KeyboardInterrupt:
+         print("Exiting program.")
 
-    
+def startListening(port):
+    trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port,), daemon=True)
+        # Start the thread
+    trackerListen_thread.start()
+    pass
+
+def startBroadcast(server_ip, server_port, port , fileName, received_index, sock):
+    broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, received_index, sock), daemon=True)
+        # Start the thread
+    broadcast_thread.start()
+
+
 def broadcast(server_ip, server_port, port, filename, received_index, sock):
     global current_peer_port
     #Broadbast packet looks like: Port of Peer thats broadcasting|File name(spiderman)|received_indexs 
@@ -69,8 +82,29 @@ def broadcast(server_ip, server_port, port, filename, received_index, sock):
                 time.sleep(5)    
     except Exception as e:
         print(f"Error connecting to {server_ip}:{server_port} - {e}")
-    
 
+def receiveFromTracker(listenPort):
+    print("here")
+    udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        udp_sock.bind((host, listenPort))
+        print(f"Listening for UDP packets on {host}:{listenPort}...")
+        while True:
+
+            data, sender = udp_sock.recvfrom(1024)
+            packet = data.decode()
+            print(f"Received packet from {sender}: {packet}")
+            # Store the received packet in the list
+    except Exception as e:
+        print("Error in UDP listener:", e)
+    finally:
+        udp_sock.close()
+    #getting a packet from the tracker that has info about the thread I need to connect.
+    pass 
+
+def connectToPeer():
+    #Start data tranfer
+    pass 
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
