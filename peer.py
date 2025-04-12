@@ -9,7 +9,7 @@ host = "127.0.0.1"
 received_file = {}
 received_index = []
 def main(port, fileName, metainfo):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         #First check if the port can be bound
         try:
             sock.bind((host, port))
@@ -27,18 +27,17 @@ def main(port, fileName, metainfo):
             print("Torrent File Does Not Exist")
             return False
 
-        print(file_content)
+        
         fixed_str = re.sub(r'(\b[a-zA-Z_][a-zA-Z0-9_]*\b)(\s*):', r'"\1"\2:', file_content)
         fixed_str = re.sub(r':\s*([a-zA-Z_][a-zA-Z0-9_]*)(\s*[,}])', r': "\1"\2', fixed_str)
         try:
             # ast.literal_eval safely evaluates the string to a dictionary
             result_dict = ast.literal_eval(fixed_str)
-            print(result_dict)
+           
         except Exception as e:
             print("Error parsing dictionary:", e)
             return None
-        print("here")
-        print(result_dict["announce"])
+       
         trackerInfo = result_dict["announce"]
         info = result_dict["info"]
         filename = info["name"]
@@ -46,7 +45,7 @@ def main(port, fileName, metainfo):
         server_ip = trackerInfo[0]  
         server_port = trackerInfo[1]     
     # Create a thread that will run the connect_to_server function
-        connection_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port , fileName, received_index), daemon=True)
+        connection_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port , fileName, received_index, sock), daemon=True)
         # Start the thread
         connection_thread.start()
         # Optionally, wait for the thread to finish
@@ -61,17 +60,15 @@ def main(port, fileName, metainfo):
         
 
     
-def broadcast(server_ip, server_port, port, filename, received_index):
+def broadcast(server_ip, server_port, port, filename, received_index, sock):
     global current_peer_port
     #Broadbast packet looks like: Port of Peer thats broadcasting|File name(spiderman)|received_indexs 
     try:
         # Create a socket object using IPv4 and TCP
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             # Connect to the specified server
-            sock.connect((server_ip, server_port))
             while True:
                 packet = f"{port}|{filename}|{received_index}"
-                sock.sendall(packet.encode())
+                sock.sendto(packet.encode(), (server_ip, server_port) )
                 print("Broadcasted:", packet)
                 time.sleep(5)    
     except Exception as e:
