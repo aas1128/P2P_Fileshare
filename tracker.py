@@ -41,7 +41,7 @@ def match_peers(dl_peer):
         if (port, name, received) == dl_peer or name != dl_name:
             continue
         if set(received) & needed:
-            info = f'{port}|{name}|{received}'
+            info = f'{port}|{name}|{received}'.encode()
             addr = ('127.0.0.1', dl_port)
             sock.sendto(info, addr)
             return 1
