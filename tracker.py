@@ -18,16 +18,16 @@ def generate_metainfo(name, file_len):
     pieces = []
     for i in range(0, file_len, p_len):
         pieces.append(i)
-    file_pieces[name] = pieces
+    file_pieces[name] = [str(item) for item in pieces]
     with open(f'{name}.torrent', 'w') as file:
         file.write(f'{{announce: (\'127.0.0.1\', {tr_port}), info: {{name: {name}, piece_length: {p_len}, pieces: {pieces}, length: {file_len}}}}}')
 
 
 def discover_peer():
-    # global current_dl_peer
     while 1:
-        pkt, _ = sock.recvfrom(100)
+        pkt, sender = sock.recvfrom(100)
         port, name, received, = pkt.decode().split('|')
+        port = int(port)
         received = received[1:-1].split(', ')
         seeders[port] = (name, received)
         # print(port, name, received)
@@ -38,7 +38,11 @@ def match_peers(dl_peer):
     dl_port, dl_name, dl_recv = dl_peer
     # file pieces that dl_peer needs
     needed = set(file_pieces[dl_name]) - set(dl_recv)
-    # print(needed)
+    if not needed:
+        # dl_peer has the whole file
+        print(f'{dl_port} already has entire {dl_name} file')
+        dling_peers.remove(dl_peer)
+        return
     for port, (name, received) in seeders.items():
         if (port, name, received) == dl_peer or name != dl_name:
             continue
@@ -50,7 +54,6 @@ def match_peers(dl_peer):
             time.sleep(wait)
             break
     
-
 
 def main():
     generate_metainfo('spiderman', 64)
