@@ -25,7 +25,7 @@ def generate_metainfo(name, file_len):
 def discover_peer():
     global current_dl_peer
     while 1:
-        pkt, _ = sock.recvfrom()
+        pkt, _ = sock.recvfrom(100)
         print(pkt)
         port, name, received, = pkt.decode().split('|')
         received = received.split(',')
