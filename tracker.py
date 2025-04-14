@@ -30,7 +30,7 @@ def generate_metainfo(file_path):
 
     # write to metainfo .torrent file
     with open(f'{file_name}.torrent', 'w') as f:
-        f.write(f'{{announce: (\'127.0.0.1\', {tr_port}), info: {{name: {file}, piece_length: {p_len}, pieces: {pieces}, length: {file_len}}}}}')
+        f.write(f'{{announce: (\'127.0.0.1\', {tr_port}), info: {{name: \'{file}\', piece_length: {p_len}, pieces: {pieces}, length: {file_len}}}}}')
 
 
 def discover_peers():
