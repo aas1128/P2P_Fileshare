@@ -11,10 +11,13 @@ received_index = [0, 8, 16, 24, 32, 40, 48, 56]
 incoming_peers_to_connect = []
 keep_downloading_file = True 
 def main(port, fileName, metainfo):
+
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         #First check if the port can be bound
         try:
             sock.bind((host, port))
+            keep_downloading_file = True
+            
         except socket.error as e:
             # If binding fails, it likely means the port is in use
             print(f"Error binding to port {port} on {host}: {e}")
@@ -25,7 +28,6 @@ def main(port, fileName, metainfo):
         #Need to get info from file to start broadcast & listen
         trackerInfo = torrent_file["announce"]
         filename =  torrent_file["info"]["name"]
-        print("this is the filename", filename)
         server_ip = trackerInfo[0]  
         server_port = trackerInfo[1]     
         # Create a thread that will run the connect_to_server function
@@ -33,8 +35,10 @@ def main(port, fileName, metainfo):
         startBroadcast(server_ip, server_port, port + 1 , filename, received_index, sock)
         
         #Start the listen 
-        startListening(port + 1)
-        
+        startListeningForTracker(port, sock)
+
+        startListeningForPeers(port + 1)
+    
         #Start Connecting and Downloading to other peers
         connectToPeer()
         try:
@@ -61,17 +65,56 @@ def parse_torrent_file(metainfo):
         print("Error parsing Torrent File:", e)
         return None
    
-def startListening(port):
-    trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port,), daemon=True)
+def startListeningForTracker(port, sock):
+    trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port, sock), daemon=True)
     # Start the thread
     trackerListen_thread.start()
-    
+
+def startListeningForPeers(port):
+    peerListen_thread = threading.Thread(target=receiveFromPeers, args=(port,), daemon=True)
+    # Start the thread
+    peerListen_thread.start()
 
 def startBroadcast(server_ip, server_port, port , fileName, received_index, sock):
     broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, received_index, sock), daemon=True)
         # Start the thread
     broadcast_thread.start()
 
+def receiveFromPeers(listenPort):
+    print('tcp server')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_sock:
+        try:
+            tcp_sock.bind((host, listenPort))
+            tcp_sock.listen()
+            print(f'open on {listenPort}')
+            conn, addr = tcp_sock.accept()  
+            print(f'connected to {addr}')
+            with conn:
+                while True:
+                    received_data, address = tcp_sock.recv(1024).decode()
+                    print(f'received from {addr}')
+                    print(received_data)
+                    #start sending the packets they need to them
+
+        except:
+            pass 
+
+def receiveFromTracker(listenPort, udp_sock):
+    # udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # udp_sock.bind((host, listenPort))
+        print(listenPort)
+        print(f"Listening for UDP packets on {host}:{listenPort}...")
+        while keep_downloading_file:
+            data, sender = udp_sock.recvfrom(1024)
+            packet = data.decode()
+            print(f"Received packet from {sender}: {packet}")
+            incoming_peers_to_connect.append(packet)
+            # Store the received packet in the list
+    except Exception as e:
+        print("Error in UDP listener:", e)
+    finally:
+        udp_sock.close()
 
 def broadcast(server_ip, server_port, port, filename, received_index, sock):
     global current_peer_port
@@ -87,35 +130,36 @@ def broadcast(server_ip, server_port, port, filename, received_index, sock):
     except Exception as e:
         print(f"Error connecting to {server_ip}:{server_port} - {e}")
 
-def receiveFromTracker(listenPort):
-    udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        udp_sock.bind((host, listenPort))
-        print(f"Listening for UDP packets on {host}:{listenPort}...")
-        while keep_downloading_file:
-            data, sender = udp_sock.recvfrom(1024)
-            packet = data.decode()
-            print(f"Received packet from {sender}: {packet}")
-            incoming_peers_to_connect.append(packet)
-            # Store the received packet in the list
-    except Exception as e:
-        print("Error in UDP listener:", e)
-    finally:
-        udp_sock.close()
-
 def connectToPeer():
-    while keep_downloading_file:
-        if incoming_peers_to_connect:
-            peer_info = incoming_peers_to_connect[0]
-            #Incoming peer info in in form:
-            port, name, received, = peer_info.split('|')
-            port = int(port)
-            print("here is the port: ", port)
-            received = received[1:-1].split(', ')
+    print('tcp client')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_sock:
+        try:
+            while keep_downloading_file:
+                #Here we check if there are any packets sent to us by the tracker
+                if incoming_peers_to_connect:
+                    print(incoming_peers_to_connect)
+                    #Pop off the first one and see what we have to download
+                    peer_info = incoming_peers_to_connect.pop(0)
+                    #Incoming peer info in in form:
+                    port, name, received, = peer_info.split('|')
+                    port = int(port)
+                    received = received[1:-1].split(', ')
+                    indexes_we_have =  set(received_index)
+                    indexes_needed = []
+                    #Build a list of all the indexes we need before we to the TCP connection
+                    for val in received:
+                        index_I_might_need = int(val.strip("'"))
+                        if  index_I_might_need not in indexes_we_have :
+                            indexes_needed.append(index_I_might_need)
+                    # print(f'needed: {indexes_needed}')
+                    print(f'connecting to {port}')
+                    client_sock.connect((host, port))
+                    client_sock.sendall(b'hello')
+                    data = client_sock.recv(1024)
+                    print(data)
+        except:
+            pass 
 
-
-    
-    pass 
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:

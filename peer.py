@@ -35,9 +35,9 @@ def main(port, fileName, metainfo):
         startBroadcast(server_ip, server_port, port + 1 , filename, received_index, sock)
         
         #Start the listen 
-        startListeningForTracker(port + 1)
+        startListeningForTracker(port, sock)
 
-        startListeningForPeers(port)
+        startListeningForPeers(port + 1)
     
         #Start Connecting and Downloading to other peers
         connectToPeer()
@@ -65,8 +65,8 @@ def parse_torrent_file(metainfo):
         print("Error parsing Torrent File:", e)
         return None
    
-def startListeningForTracker(port):
-    trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port,), daemon=True)
+def startListeningForTracker(port, sock):
+    trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port, sock), daemon=True)
     # Start the thread
     trackerListen_thread.start()
 
@@ -81,20 +81,28 @@ def startBroadcast(server_ip, server_port, port , fileName, received_index, sock
     broadcast_thread.start()
 
 def receiveFromPeers(listenPort):
-    tcp_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        tcp_sock.bind((host, listenPort))
-        while True:
-            received_data, address = tcp_sock.recv(1024).decode()
-            print(received_data)
-            #start sending the packets they need to them
-    except:
-        pass 
+    print('tcp server')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_sock:
+        try:
+            tcp_sock.bind((host, listenPort))
+            tcp_sock.listen()
+            print(f'open on {listenPort}')
+            conn, addr = tcp_sock.accept()  
+            print(f'connected to {addr}')
+            with conn:
+                while True:
+                    received_data, address = tcp_sock.recv(1024).decode()
+                    print(f'received from {addr}')
+                    print(received_data)
+                    #start sending the packets they need to them
 
-def receiveFromTracker(listenPort):
-    udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        except:
+            pass 
+
+def receiveFromTracker(listenPort, udp_sock):
+    # udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        udp_sock.bind((host, listenPort))
+        # udp_sock.bind((host, listenPort))
         print(listenPort)
         print(f"Listening for UDP packets on {host}:{listenPort}...")
         while keep_downloading_file:
@@ -107,6 +115,7 @@ def receiveFromTracker(listenPort):
         print("Error in UDP listener:", e)
     finally:
         udp_sock.close()
+
 def broadcast(server_ip, server_port, port, filename, received_index, sock):
     global current_peer_port
     #Broadbast packet looks like: Port of Peer thats broadcasting|File name(spiderman)|received_indexs 
@@ -122,31 +131,35 @@ def broadcast(server_ip, server_port, port, filename, received_index, sock):
         print(f"Error connecting to {server_ip}:{server_port} - {e}")
 
 def connectToPeer():
-    while keep_downloading_file:
-        #Here we check if there are any packets sent to us by the tracker
-        if incoming_peers_to_connect:
-            #Pop off the first one and see what we have to download
-            peer_info = incoming_peers_to_connect[0]
-            #Incoming peer info in in form:
-            port, name, received, = peer_info.split('|')
-            port = int(port)
-            received = received[1:-1].split(', ')
-            indexes_we_have =  set(received_index)
-            indexes_needed = []
-            #Build a list of all the indexes we need before we to the TCP connection
-            for val in received:
-                index_I_might_need = int(val.strip("'"))
-                if  index_I_might_need not in indexes_we_have :
-                    indexes_needed.append(index_I_might_need)
-            
+    print('tcp client')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_sock:
+        try:
+            while keep_downloading_file:
+                #Here we check if there are any packets sent to us by the tracker
+                if incoming_peers_to_connect:
+                    print(incoming_peers_to_connect)
+                    #Pop off the first one and see what we have to download
+                    peer_info = incoming_peers_to_connect.pop(0)
+                    #Incoming peer info in in form:
+                    port, name, received, = peer_info.split('|')
+                    port = int(port)
+                    received = received[1:-1].split(', ')
+                    indexes_we_have =  set(received_index)
+                    indexes_needed = []
+                    #Build a list of all the indexes we need before we to the TCP connection
+                    for val in received:
+                        index_I_might_need = int(val.strip("'"))
+                        if  index_I_might_need not in indexes_we_have :
+                            indexes_needed.append(index_I_might_need)
+                    # print(f'needed: {indexes_needed}')
+                    print(f'connecting to {port}')
+                    client_sock.connect((host, port))
+                    client_sock.sendall(b'hello')
+                    data = client_sock.recv(1024)
+                    print(data)
+        except:
+            pass 
 
-            
-            #Here I need to Start TCP connections with the Port varaible defined above
-            #Once I have a connection 
-            
-
-    
-    pass 
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:

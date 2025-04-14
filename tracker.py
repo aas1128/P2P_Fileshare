@@ -37,7 +37,7 @@ def generate_metainfo(file_path):
 def discover_peers():
     while 1:
         # receive broadcasts from peers
-        pkt, sender = sock.recvfrom(100)
+        pkt, sender = sock.recvfrom(1024)
         print(f'Received: {pkt} from {sender}')
         # clean up packet data
         port, name, received, = pkt.decode().split('|')
@@ -46,7 +46,7 @@ def discover_peers():
         # add to seeders and downloaders
         curr_time = time.time()
         seeders[port] = (name, received, curr_time)
-        dl_peers.append((port, name, received))
+        dl_peers.append((port, name, received, sender))
 
 
 def cleanup_seeders():
@@ -63,7 +63,7 @@ def cleanup_seeders():
 
 
 def match_peers(dl_peer):
-    dl_port, dl_name, dl_recv = dl_peer
+    dl_port, dl_name, dl_recv, dl_sender = dl_peer
     print(f'{dl_port} seaching for {dl_name}...')
     # file pieces that dl_peer needs
     needed = set(file_pieces[dl_name]) - set(dl_recv)
@@ -73,15 +73,14 @@ def match_peers(dl_peer):
         dling_peers.remove(dl_peer)
         return
     for port, (name, received, rcv_time) in seeders.items():
-        if (port, name, received) == dl_peer or name != dl_name:
+        if (port, name, received) == (dl_port, dl_name, dl_recv) or name != dl_name:
             # if same peer
             continue
         if set(received) & needed:
             # if there is an intersection of what the peer has and what dl_peer needs
             print(f'Matching {dl_port} with {port}...')
             info = f'{port}|{name}|{received}'.encode()
-            addr = ('127.0.0.1', dl_port)
-            sock.sendto(info, addr)
+            sock.sendto(info, dl_sender)
             time.sleep(wait)
             break
     
