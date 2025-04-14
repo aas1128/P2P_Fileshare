@@ -25,11 +25,12 @@ def main(port, fileName, metainfo):
         #Need to get info from file to start broadcast & listen
         trackerInfo = torrent_file["announce"]
         filename =  torrent_file["info"]["name"]
+        print("this is the filename", filename)
         server_ip = trackerInfo[0]  
         server_port = trackerInfo[1]     
         # Create a thread that will run the connect_to_server function
         #Set the listening port to whatever the user specifies + 1
-        startBroadcast(server_ip, server_port, port + 1 , fileName, received_index, sock)
+        startBroadcast(server_ip, server_port, port + 1 , filename, received_index, sock)
         
         #Start the listen 
         startListening(port + 1)
@@ -103,15 +104,15 @@ def receiveFromTracker(listenPort):
         udp_sock.close()
 
 def connectToPeer():
-    print(incoming_peers_to_connect)
     while keep_downloading_file:
         if incoming_peers_to_connect:
             peer_info = incoming_peers_to_connect[0]
-            print(peer_info)
             #Incoming peer info in in form:
-            #Port|FileName|List of Indexes they have
-            port = peer_info[0]
-            
+            port, name, received, = peer_info.split('|')
+            port = int(port)
+            print("here is the port: ", port)
+            received = received[1:-1].split(', ')
+
 
     
     pass 
