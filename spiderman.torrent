@@ -1,1 +1,1 @@
-{announce: ('127.0.0.1', 9000), info: {name: spiderman, piece_length: 8, pieces: [0, 8, 16, 24, 32, 40, 48, 56], length: 64}}
+{announce: ('127.0.0.1', 9000), info: {name: spiderman.txt, piece_length: 8, pieces: ['0', '8', '16', '24', '32', '40', '48', '56'], length: 64}}
