@@ -30,7 +30,7 @@ def discover_peer():
         port = int(port)
         received = received[1:-1].split(', ')
         seeders[port] = (name, received)
-        # print(port, name, received)
+        print(f'Received: {pkt}')
         dl_peers.append((port, name, received))
 
 
