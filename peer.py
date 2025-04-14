@@ -8,6 +8,8 @@ import time
 host = "127.0.0.1"
 received_file = {}
 received_index = []
+incoming_peers_to_connect = []
+keep_downloading_file = True 
 def main(port, fileName, metainfo):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         #First check if the port can be bound
@@ -18,50 +20,51 @@ def main(port, fileName, metainfo):
             print(f"Error binding to port {port} on {host}: {e}")
             return False
         #Read in the torrent file
-        try: 
-            with open(metainfo, 'r') as file:
-            # Read the entire file
-                file_content = file.read()
-        except:
-            print("Torrent File Does Not Exist")
-            return False
-        fixed_str = re.sub(r'(\b[a-zA-Z_][a-zA-Z0-9_]*\b)(\s*):', r'"\1"\2:', file_content)
-        fixed_str = re.sub(r':\s*([a-zA-Z_][a-zA-Z0-9_]*)(\s*[,}])', r': "\1"\2', fixed_str)
-        try:
-            # ast.literal_eval safely evaluates the string to a dictionary
-            result_dict = ast.literal_eval(fixed_str) 
-        except Exception as e:
-            print("Error parsing dictionary:", e)
-            return None
-        trackerInfo = result_dict["announce"]
-        info = result_dict["info"]
-        filename = info["name"]
-        #Need to connect to the tracker to start broadcasting.
+        torrent_file = parse_torrent_file(metainfo)
+
+        #Need to get info from file to start broadcast & listen
+        trackerInfo = torrent_file["announce"]
+        filename =  torrent_file["info"]["name"]
         server_ip = trackerInfo[0]  
         server_port = trackerInfo[1]     
-    # Create a thread that will run the connect_to_server function
-    #Set the listening port to whatever the user specifies + 1
+        # Create a thread that will run the connect_to_server function
+        #Set the listening port to whatever the user specifies + 1
         startBroadcast(server_ip, server_port, port + 1 , fileName, received_index, sock)
         
-        print("here")
+        #Start the listen 
         startListening(port + 1)
         
-        #Once I Bind to port get the Tracker URL from the metaInfo
-        #The broadcast should be on a timer which I repetedly => 10 seconds, and on every receive
-        #I need a thread that is open and listening for file parts
-        #Once I read in a file I validate it, update my recieved_file to 
-        #Update the dictionary: the key is the index , the value is the actual fiel 
+        #Start Connecting and Downloading to other peers
+        connectToPeer()
         try:
-            while True:
+            while keep_downloading_file:
                 time.sleep(3)
         except KeyboardInterrupt:
          print("Exiting program.")
 
+def parse_torrent_file(metainfo):
+    try: 
+            with open(metainfo, 'r') as file:
+            # Read the entire file
+                file_content = file.read()
+    except:
+        print("Torrent File Does Not Exist")
+        return False
+    fixed_str = re.sub(r'(\b[a-zA-Z_][a-zA-Z0-9_]*\b)(\s*):', r'"\1"\2:', file_content)
+    fixed_str = re.sub(r':\s*([a-zA-Z_][a-zA-Z0-9_]*)(\s*[,}])', r': "\1"\2', fixed_str)
+    try:
+        # ast.literal_eval safely evaluates the string to a dictionary
+        result_dict = ast.literal_eval(fixed_str) 
+        return result_dict
+    except Exception as e:
+        print("Error parsing Torrent File:", e)
+        return None
+   
 def startListening(port):
     trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port,), daemon=True)
-        # Start the thread
+    # Start the thread
     trackerListen_thread.start()
-    pass
+    
 
 def startBroadcast(server_ip, server_port, port , fileName, received_index, sock):
     broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, received_index, sock), daemon=True)
@@ -75,7 +78,7 @@ def broadcast(server_ip, server_port, port, filename, received_index, sock):
     try:
         # Create a socket object using IPv4 and TCP
             # Connect to the specified server
-            while True:
+            while keep_downloading_file:
                 packet = f"{port}|{filename}|{received_index}"
                 sock.sendto(packet.encode(), (server_ip, server_port) )
                 print("Broadcasted:", packet)
@@ -84,26 +87,33 @@ def broadcast(server_ip, server_port, port, filename, received_index, sock):
         print(f"Error connecting to {server_ip}:{server_port} - {e}")
 
 def receiveFromTracker(listenPort):
-    print("here")
     udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         udp_sock.bind((host, listenPort))
         print(f"Listening for UDP packets on {host}:{listenPort}...")
-        while True:
-
+        while keep_downloading_file:
             data, sender = udp_sock.recvfrom(1024)
             packet = data.decode()
             print(f"Received packet from {sender}: {packet}")
+            incoming_peers_to_connect.append(packet)
             # Store the received packet in the list
     except Exception as e:
         print("Error in UDP listener:", e)
     finally:
         udp_sock.close()
-    #getting a packet from the tracker that has info about the thread I need to connect.
-    pass 
 
 def connectToPeer():
-    #Start data tranfer
+    while keep_downloading_file:
+        if incoming_peers_to_connect:
+            peer_info = incoming_peers_to_connect[0]
+            #Incoming peer info in in form:
+            port, name, received, = peer_info.split('|')
+            port = int(port)
+            print("here is the port: ", port)
+            received = received[1:-1].split(', ')
+
+
+    
     pass 
 
 if __name__ == '__main__':
