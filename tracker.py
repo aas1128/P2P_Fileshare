@@ -13,7 +13,7 @@ peer_timeout = 60
 file_pieces = {}
 dl_peers = []
 dling_peers = []
-wait = 5
+wait = 2
 
 
 def generate_metainfo(file_path):
@@ -21,6 +21,7 @@ def generate_metainfo(file_path):
     file = os.path.basename(file_path)
     file_name, file_ext = os.path.splitext(file)
     file_len = os.path.getsize(file_path)
+    print(f'Generating {file_name}.torrent from {file}...')
 
     # compute info for metainfo file
     pieces = []
@@ -37,7 +38,7 @@ def discover_peers():
     while 1:
         # receive broadcasts from peers
         pkt, sender = sock.recvfrom(100)
-        print(f'Received: {pkt}')
+        print(f'Received: {pkt} from {sender}')
         # clean up packet data
         port, name, received, = pkt.decode().split('|')
         port = int(port)
@@ -50,22 +51,25 @@ def discover_peers():
 
 def cleanup_seeders():
     while 1:
+        print(f'Cleaning seeders...')
         # every 30s, check for 'dead' peers
         for port, (name, received, rcv_time) in seeders.items():
             curr_time = time.time()
             if (curr_time - rcv_time) > peer_timeout:
                 # if a peer hasnt been heard from in <60>s, remove from seeders
+                print(f'{port} is dead, removing...') 
                 seeders.pop(port)
         time.sleep(30)
 
 
 def match_peers(dl_peer):
     dl_port, dl_name, dl_recv = dl_peer
+    print(f'{dl_port} seaching for {dl_name}...')
     # file pieces that dl_peer needs
     needed = set(file_pieces[dl_name]) - set(dl_recv)
     if not needed:
         # dl_peer has the whole file
-        print(f'{dl_port} already has entire {dl_name} file')
+        print(f'{dl_port} already has entire {dl_name} file, removing...')
         dling_peers.remove(dl_peer)
         return
     for port, (name, received, rcv_time) in seeders.items():
@@ -74,7 +78,7 @@ def match_peers(dl_peer):
             continue
         if set(received) & needed:
             # if there is an intersection of what the peer has and what dl_peer needs
-            print(f'matching {dl_port} with {port}')
+            print(f'Matching {dl_port} with {port}...')
             info = f'{port}|{name}|{received}'.encode()
             addr = ('127.0.0.1', dl_port)
             sock.sendto(info, addr)
@@ -95,12 +99,12 @@ def main():
     cleanup_thread.start()
 
     while 1:
-        print(f'Peers Downloading: {dling_peers}')
         if dl_peers:
             # if there are peers that want to download something, get oldest in list
             current_peer = dl_peers.pop(0)
             if current_peer not in dling_peers:
                 dling_peers.append(current_peer)
+            print(f'Peers Downloading: {dling_peers}')
             # start thread to match the current peer to a peer that has what it needs
             match_thread = Thread(target=match_peers, args=(current_peer,), daemon=True)
             match_thread.start()
