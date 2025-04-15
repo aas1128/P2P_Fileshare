@@ -92,10 +92,18 @@ def receiveFromPeers(listenPort):
             with conn:
                 while True:
                     print("inside the rec")
-                    print(conn)
                     received_data = conn.recv(1024)
+                    if not received_data:
+                        break
                     print("this shoulsnt be empty", received_data)
                     #start sending the packets they need to them
+                    needed = received_data.decode()[1:-1].split(', ')
+                    print(needed)
+                    for piece in needed:
+                        print('here')
+                        info = f'{received_file[int(piece)]}'.encode()
+                        print(info)
+                        conn.send(info)
 
         except:
             pass 
