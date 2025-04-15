@@ -38,13 +38,19 @@ def discover_peers():
     while 1:
         # receive broadcasts from peers
         pkt, sender = sock.recvfrom(1024)
-        print(f'Received: {pkt} from {sender}')
+        # print(f'Received: {pkt} from {sender}')
         # clean up packet data
         port, name, received, = pkt.decode().split('|')
         port = int(port)
         received = received[1:-1].split(', ')
         # add to seeders and downloaders
         curr_time = time.time()
+        if port in seeders and seeders[port][0] == name:
+            # if the peer is already seeding this file
+            if (curr_time - seeders[port][2]) < peer_timeout:
+                # if peer hasn't timed out, don't re add it
+                print(f'not re adding {port}')
+                continue
         seeders[port] = (name, received, curr_time)
         dl_peers.append((port, name, received, sender))
 
@@ -53,7 +59,7 @@ def cleanup_seeders():
     while 1:
         print(f'Cleaning seeders...')
         # every 30s, check for 'dead' peers
-        for port, (name, received, rcv_time) in seeders.items():
+        for port, (name, received, rcv_time) in list(seeders.items()):
             curr_time = time.time()
             if (curr_time - rcv_time) > peer_timeout:
                 # if a peer hasnt been heard from in <60>s, remove from seeders
