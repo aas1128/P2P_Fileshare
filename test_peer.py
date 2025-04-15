@@ -91,9 +91,10 @@ def receiveFromPeers(listenPort):
             print(f'connected to {addr}')
             with conn:
                 while True:
-                    received_data, address = tcp_sock.recv(1024).decode()
-                    print(f'received from {addr}')
-                    print(received_data)
+                    print("inside the rec")
+                    print(conn)
+                    received_data = conn.recv(1024)
+                    print("this shoulsnt be empty", received_data)
                     #start sending the packets they need to them
 
         except:
@@ -154,7 +155,7 @@ def connectToPeer():
                     # print(f'needed: {indexes_needed}')
                     print(f'connecting to {port}')
                     client_sock.connect((host, port))
-                    client_sock.sendall(b'hello')
+                    client_sock.sendall(indexes_needed.encode())
                     data = client_sock.recv(1024)
                     print(data)
         except:
