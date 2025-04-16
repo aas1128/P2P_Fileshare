@@ -49,7 +49,7 @@ def discover_peers():
             # if the peer is already seeding this file
             if (curr_time - seeders[port][2]) < peer_timeout:
                 # if peer hasn't timed out, don't re add it
-                print(f'not re adding {port}')
+                # print(f'not re adding {port}')
                 continue
         seeders[port] = (name, received, curr_time)
         dl_peers.append((port, name, received, sender))
@@ -109,7 +109,7 @@ def main():
             current_peer = dl_peers.pop(0)
             if current_peer not in dling_peers:
                 dling_peers.append(current_peer)
-            print(f'Peers Downloading: {dling_peers}')
+            # print(f'Peers Downloading: {dling_peers}')
             # start thread to match the current peer to a peer that has what it needs
             match_thread = Thread(target=match_peers, args=(current_peer,), daemon=True)
             match_thread.start()
