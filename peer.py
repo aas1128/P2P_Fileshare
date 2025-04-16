@@ -160,8 +160,9 @@ def connectToPeer():
                     print(info)
                     client_sock.sendall(info)
                     print("sent")
-                    # data = client_sock.recv(1024)
-                    # print(data)
+                    data = client_sock.recv(1024)
+                    print(data)
+            
         except:
             pass 
 
