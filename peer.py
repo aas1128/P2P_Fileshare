@@ -11,21 +11,20 @@ received_index = []
 incoming_peers_to_connect = []
 keep_downloading_file = True 
 keep_seeding = True
-def main(port, metainfo):
-
+def main(port, metainfo, file):
+    print(port, metainfo, file)
+    global received_file, received_index
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         #First check if the port can be bound
         try:
-            sock.bind((host, port))
-            keep_downloading_file = True
-            
+            sock.bind((host, port))            
         except socket.error as e:
             # If binding fails, it likely means the port is in use
             print(f"Error binding to port {port} on {host}: {e}")
             return False
+        
         #Read in the torrent file
         torrent_file = parse_torrent_file(metainfo)
-
         #Need to get info from file to start broadcast & listen
         trackerInfo = torrent_file["announce"]
         filename =  torrent_file["info"]["name"]
@@ -33,11 +32,18 @@ def main(port, metainfo):
         server_port = trackerInfo[1]  
         p_len = int(torrent_file["info"]["piece_length"])
         pieces = torrent_file["info"]["pieces"]
-
         pieces = [int(x) for x in pieces]
+
+        if file:
+            # the peer has the file
+            with open(file, 'r') as f:
+                received_file = f.read()
+                received_index = pieces
+            print('Peer has file')
+
         # Create a thread that will run the connect_to_server function
         #Set the listening port to whatever the user specifies + 1
-        startBroadcast(server_ip, server_port, port + 1 , filename, received_index, sock)
+        startBroadcast(server_ip, server_port, port + 1, filename, sock)
         
         #Start the listen 
         startListeningForTracker(port, sock)
@@ -82,8 +88,8 @@ def startListeningForPeers(port, p_len):
     # Start the thread
     peerListen_thread.start()
 
-def startBroadcast(server_ip, server_port, port , fileName, received_index, sock):
-    broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, received_index, sock), daemon=True)
+def startBroadcast(server_ip, server_port, port , fileName, sock):
+    broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, sock), daemon=True)
         # Start the thread
     broadcast_thread.start()
 
@@ -108,8 +114,9 @@ def receiveFromPeers(listenPort, p_len):
                         file_chunk = received_file[idx:idx+p_len]
                         csum = checksum(file_chunk)
                         info = f'{idx}|{file_chunk}|{csum}'.encode()
-                        print(f'Sending chunk {idx}')
+                        print(f'Sending chunk {idx}: {file_chunk}')
                         conn.send(info)
+                        time.sleep(2)
         except:
             pass 
 
@@ -131,7 +138,7 @@ def receiveFromTracker(listenPort, udp_sock):
         udp_sock.close()
 
 
-def broadcast(server_ip, server_port, port, filename, received_index, sock):
+def broadcast(server_ip, server_port, port, filename, sock):
     global keep_seeding
     #Broadbast packet looks like: Port of Peer thats broadcasting|File name(spiderman)|received_indexs 
     try:
@@ -181,14 +188,14 @@ def connectToPeer(filename, pieces):
                     client_sock.sendall(info)
                     # receive a chunk of the file from peer and decode/validate it
                     file_chunk = client_sock.recv(1024)
-                    index, fileChunk, prevchecksum, = file_chunk.decode().split('|')
+                    index, fileChunk, prevchecksum = file_chunk.decode().split('|')
                     index = int(index)
                     newCheckSum = checksum(fileChunk)
                     if newCheckSum != int(prevchecksum):
-                        print('Checksums not equal')
+                        print(f'Checksums not equal for chunk {index}')
                         continue
                     # if validated, update received
-                    print(f'Received chunk {index}')
+                    print(f'Received chunk {index}: {fileChunk}')
                     received_index.append(index)
                     received_index.sort()
                     received_file = received_file[:index] +  fileChunk + received_file[index:]
@@ -222,11 +229,12 @@ def checksum(data):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print("Usage: python peer.py <port> <fileName> <metadata>")
+    if len(sys.argv) < 3:
+        print("Usage: python peer.py <port> <metainfo file> [file]")
         sys.exit(1)
     port = int(sys.argv[1])
-    fileName = sys.argv[2]
-    metadata = sys.argv[3]
-
-main(port, metadata)
+    metainfo = sys.argv[2]
+    file = None
+    if len(sys.argv) == 4:
+        file = sys.argv[3]
+    main(port, metainfo, file)
