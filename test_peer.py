@@ -6,7 +6,7 @@ import threading
 import time 
 
 host = "127.0.0.1"
-received_file = {"spiderma", "spiderma", "spiderma", "spiderma", "spiderma", "spiderma","spiderma","spiderma"}
+received_file = "spidermaspidermaspidermaspidermaspidermaspidermaspidermaspiderma"
 received_index = [0, 8, 16, 24, 32, 40, 48, 56]
 incoming_peers_to_connect = []
 keep_downloading_file = True 
@@ -95,7 +95,7 @@ def receiveFromPeers(listenPort):
                     received_data = conn.recv(1024)
                     if not received_data:
                         break
-                    print("this shoulsnt be empty", received_data)
+                    
                     #start sending the packets they need to them
                     needed = received_data.decode()[1:-1].split(', ')
                     for piece in needed:
