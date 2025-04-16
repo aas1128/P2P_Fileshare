@@ -51,7 +51,7 @@ def main(port, metainfo, file):
         startListeningForPeers(port + 1, p_len)
     
         #Start Connecting and Downloading to other peers
-        connectToPeer(filename, pieces)
+        connectToPeer(filename, pieces, port)
         try:
             while keep_seeding:
                 time.sleep(3)
@@ -153,7 +153,7 @@ def broadcast(server_ip, server_port, port, filename, sock):
         print(f"Error connecting to {server_ip}:{server_port} - {e}")
 
 
-def connectToPeer(filename, pieces):
+def connectToPeer(filename, pieces, peer_port):
     global received_file, keep_downloading_file
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_sock:
@@ -202,15 +202,15 @@ def connectToPeer(filename, pieces):
             
             # when all pieces have been received, write to file
             incoming_peers_to_connect.pop(0)
-            writeToFile(filename, received_file)
+            writeToFile(filename, received_file, peer_port)
             return           
     except Exception as e:
         print(e) 
 
 
-def writeToFile(filename, data_to_write):
+def writeToFile(filename, data_to_write, port):
     print('Writing file...')
-    with open(f'1{filename}', 'w') as f:
+    with open(f'{port}_{filename}', 'w') as f:
         f.write(data_to_write)
 
 
