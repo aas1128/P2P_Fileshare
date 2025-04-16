@@ -29,7 +29,9 @@ def main(port, fileName, metainfo):
         trackerInfo = torrent_file["announce"]
         filename =  torrent_file["info"]["name"]
         server_ip = trackerInfo[0]  
-        server_port = trackerInfo[1]     
+        server_port = trackerInfo[1]  
+        p_len = int(torrent_file["info"]["piece_length"])
+        pieces = torrent_file["info"]["pieces"]
         # Create a thread that will run the connect_to_server function
         #Set the listening port to whatever the user specifies + 1
         startBroadcast(server_ip, server_port, port + 1 , filename, received_index, sock)
@@ -37,7 +39,7 @@ def main(port, fileName, metainfo):
         #Start the listen 
         startListeningForTracker(port, sock)
 
-        startListeningForPeers(port + 1)
+        startListeningForPeers(port + 1, p_len)
     
         #Start Connecting and Downloading to other peers
         connectToPeer()
@@ -70,8 +72,8 @@ def startListeningForTracker(port, sock):
     # Start the thread
     trackerListen_thread.start()
 
-def startListeningForPeers(port):
-    peerListen_thread = threading.Thread(target=receiveFromPeers, args=(port,), daemon=True)
+def startListeningForPeers(port, p_len):
+    peerListen_thread = threading.Thread(target=receiveFromPeers, args=(port, p_len), daemon=True)
     # Start the thread
     peerListen_thread.start()
 
@@ -80,7 +82,7 @@ def startBroadcast(server_ip, server_port, port , fileName, received_index, sock
         # Start the thread
     broadcast_thread.start()
 
-def receiveFromPeers(listenPort):
+def receiveFromPeers(listenPort, p_len):
     print('tcp server')
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_sock:
         try:
@@ -91,17 +93,16 @@ def receiveFromPeers(listenPort):
             print(f'connected to {addr}')
             with conn:
                 while True:
-                    print("inside the rec")
                     received_data = conn.recv(1024)
                     if not received_data:
                         break
-                    
                     #start sending the packets they need to them
                     needed = received_data.decode()[1:-1].split(', ')
                     for piece in needed:
-                        print('here')
-                        info = f'{received_file[int(piece)]}'.encode()
-                        print('here2')
+                        idx = int(piece)
+                        file_chunk = received_file[idx:idx+p_len]
+                        csum = checksum(file_chunk)
+                        info = f'{idx}|{file_chunk}|{csum}'.encode()
                         print(info)
                         conn.send(info)
 
@@ -168,6 +169,19 @@ def connectToPeer():
                     print(data)
         except:
             pass 
+
+def checksum(data):
+    """
+    compiutes checksum
+    data: data to compute checksum on
+    retunrs: checksum of data
+    """
+    csum = 0x0
+    for b in data.encode():
+        csum += b
+    
+    csum = csum ^ 0xFFFF
+    return csum
 
 
 if __name__ == '__main__':
