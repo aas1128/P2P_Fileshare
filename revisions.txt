@@ -1,0 +1,337 @@
+commit 742ebc63ce4f1c232c90b85222029809e247fda4
+Author: Finn <fss5045@rit.edu>
+Date:   Thu Apr 17 12:09:34 2025 -0400
+
+    created documentation for tracker and peer
+
+commit 4c50ad4eb2f5bd90c0fffe88e54c8f1b79218676
+Merge: e69cc74 3bc0cce
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Thu Apr 17 11:50:12 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit e69cc7408ee5f4d28f465d5fadd3067f1a6c0499
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Thu Apr 17 11:50:02 2025 -0400
+
+    added my docstrings
+
+commit 3bc0cceaf37c6531fd28f4e0fe6f2a6e1e069af3
+Author: Finn <fss5045@rit.edu>
+Date:   Thu Apr 17 11:30:14 2025 -0400
+
+    fixed requirements.txt
+
+commit 33aabee54fa4a71341c43074045e5445d9ec500d
+Author: Finn <fss5045@rit.edu>
+Date:   Thu Apr 17 11:21:06 2025 -0400
+
+    tracker arguments and updated readme
+
+commit af57936f98d8c6cfaa83453628b3acdf4ce0022b
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 18:09:36 2025 -0400
+
+    file written is named based on peer port
+
+commit a968fc774b3d83d4e26b641a617ceb591e297068
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 18:07:28 2025 -0400
+
+    made it so that peer.py can be run as seeder and leecher using optional argument
+
+commit 9f3b94a50dae4995da21cdd04c9aa4124e8820bc
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 17:40:31 2025 -0400
+
+    file transfer functional :)
+
+commit cf4f788db1bec2fe47ea3f334a116e8eefe13d46
+Merge: 5531d9b 67b41a3
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 16 16:16:45 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 5531d9b6e96b24101e4d37b195607b5c55dff0da
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 16 16:16:37 2025 -0400
+
+    finished the connettoPeer
+
+commit 67b41a3fd751e57c1f0b315e11ff5c6167f65055
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 16:03:38 2025 -0400
+
+    tracker cleanup
+
+commit df5c5ea8a1394d1f2ff98db7e4131315e79821aa
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 15:59:20 2025 -0400
+
+    receivefrompeers should work
+
+commit c172abb9963648bc46c22205bad8a4ab4ba1d75f
+Merge: 01cbf2b 5308bc4
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 15:35:57 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 01cbf2bc1d60fb45033f149d029edb72daf7df0f
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 16 15:35:53 2025 -0400
+
+    m
+
+commit 5308bc4b78e8d805a8dce3c396894a01475b47de
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 16 15:33:02 2025 -0400
+
+    fixed the bug
+
+commit d0d70188582b850d77f5d03b7cf9b7277da9dbee
+Author: Finn <fss5045@rit.edu>
+Date:   Tue Apr 15 16:21:59 2025 -0400
+
+    fixed tracker cleanup threadng bug
+
+commit 54fa28668d1a99bb34e93f818b22d858f7c54811
+Author: Finn <fss5045@rit.edu>
+Date:   Tue Apr 15 15:56:31 2025 -0400
+
+    test_peer  infite loop fixed
+
+commit 98004efa491a8de7873bc8d02dc7f674be63dd92
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Tue Apr 15 09:53:52 2025 -0400
+
+    fixed the bug woth TCP connection
+
+commit a791e87203a3aef9164607f09a1532abb6d1651e
+Merge: 10b8d3e a941197
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 15:55:26 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 10b8d3ed8b56a5aa17f98d336a7d892989b0812a
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 15:55:15 2025 -0400
+
+    got p2p tcp connection working
+
+commit a9411973d492eb1af4dee22fafc62036c6164c2f
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 15:40:47 2025 -0400
+
+    added the requirmeners
+
+commit aca2606351a573ea3c32e437190139ec8313ca88
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 15:39:53 2025 -0400
+
+    added the readme
+
+commit a00bb07b01ec82717fe1256d8f396b695c9c9bf9
+Merge: b997be7 00f4880
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 15:13:37 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit b997be74910b1949999dc0f9eb8b3072bc45aed5
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 15:12:45 2025 -0400
+
+    need to fix the tcp connection
+
+commit 00f4880a7cb16d0f73f52571e45b96e41144c0c5
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 13:46:13 2025 -0400
+
+    cleaning up tracker code
+
+commit 63a9c57d2e76a119208175755497b3bd9f60014c
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 13:25:12 2025 -0400
+
+    fixed bug with generating metainfo
+
+commit afe28c34aba1d3ce71fd337824b8e146fb481e52
+Merge: 3e57c09 c5ea698
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 13:17:42 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 3e57c099c1e49432aa11d6416e5e508a764e677e
+Author: Finn <fss5045@rit.edu>
+Date:   Mon Apr 14 13:17:40 2025 -0400
+
+    tracker generates metainfo from file, also added cleanup
+
+commit c5ea69895c1b26f1f18cb5363500942082693696
+Merge: f0009d8 421fa4f
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 13:17:18 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit f0009d8d2c58d9bd41458caf94b5cf99f3c2957a
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Mon Apr 14 13:17:06 2025 -0400
+
+    working on the connect to peers
+
+commit 421fa4fe002350d8db9ff14feb33e102b0a9d97f
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 17:01:19 2025 -0400
+
+    tracker matching peers 1on1
+
+commit 8acdd03bf5d92a1916f47d613c543c1fc621bfa6
+Merge: 15f0ce3 afed217
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 16:56:09 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 15f0ce356d61deb761e242da645faccce7a11f24
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 16:56:05 2025 -0400
+
+    matching working
+
+commit afed2172e6256a131acaf82a644ea06fb4a3aaaf
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 16:55:47 2025 -0400
+
+    added some code for the tracker
+
+commit 122e6b5bde255b487b7806b5a34882158f16d059
+Merge: 7be7af2 654f780
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 16:26:50 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 7be7af28f23739c3651abefc6c2338c5db75a7fa
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 16:26:46 2025 -0400
+
+    tracker match threading
+
+commit 654f780a933450d3404febc3865fb8ad01f3abbf
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 16:25:28 2025 -0400
+
+    should ne able to receive packets from the tracker
+
+commit cd6330a311ad32f8f9280e77145009dc6d5da3fb
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 15:38:23 2025 -0400
+
+    adding some test functions
+
+commit be907f53e0d8f6bc5242d9a9b027325f559e6982
+Merge: 9f7cabc cc6ee45
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 15:17:01 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 9f7cabc29e03e2200341683ebff470638b331eae
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 15:16:57 2025 -0400
+
+    got the broadcasting working
+
+commit cc6ee459092d9b8dc1c0e276e854fb68f116beba
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 15:10:54 2025 -0400
+
+    encoding tracker packet
+
+commit a4256d81d8dbd600035ccf312b5cc13e4e30fe1a
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 15:04:47 2025 -0400
+
+    bugfix
+
+commit 16e52fddb63b8b2282f7787d337a11faa04651ca
+Merge: 3133ba8 ddf961b
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 15:02:42 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 3133ba8d97b1e805d423617e2fdb11609dc9adda
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Sat Apr 12 15:02:40 2025 -0400
+
+    added the broadcoast function
+
+commit ddf961b90930b35f7a93aa9f7d4906d611539fa7
+Merge: d1b971b 929d42a
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 15:02:33 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit d1b971b0db6abc070121475a1a612beacbc32f0d
+Author: Finn <fss5045@rit.edu>
+Date:   Sat Apr 12 15:02:23 2025 -0400
+
+    tracker match_peers
+
+commit 929d42a8704d3232d786647163161dba08a5f3d2
+Merge: 382a97b c5ca1ee
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 9 13:46:23 2025 -0400
+
+    added code
+
+commit 382a97bffe8f5f9e9d013da76487ecfbe78b56ec
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 9 13:44:06 2025 -0400
+
+    converted metainfo to dict
+
+commit c5ca1ee340c7efbd5867217b0275b0af8480eb4a
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 9 13:43:56 2025 -0400
+
+    more tracker functionality
+
+commit d609b03dd8b87c95309455b208af188d3e8232c3
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 9 13:04:39 2025 -0400
+
+    tracker generating metainfo file correctly
+
+commit 70c43d5cfba07954bf3f2a9ceab16a062ce3a144
+Merge: e6fb063 1f7be03
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 9 12:56:03 2025 -0400
+
+    Merge branch 'main' of https://github.com/aas1128/P2P_Fileshare
+
+commit 1f7be03bafa7666c7a41ab163b117a519842a6ec
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 9 12:55:56 2025 -0400
+
+    added more code
+
+commit e6fb063b0d72436375949889c31bda1971db05f0
+Author: Finn <fss5045@rit.edu>
+Date:   Wed Apr 9 12:55:36 2025 -0400
+
+    added metainfo and tracker
+
+commit 86218b188877fbba3cfa2da63610350b570c7ad0
+Author: Aayan Sayed <98489656+aas1128@users.noreply.github.com>
+Date:   Wed Apr 9 12:53:46 2025 -0400
+
+    stubbed some functions
