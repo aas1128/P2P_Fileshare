@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module tracker</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">tracker</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cfinn%5C351project%5Cp2p_fileshare%5Ctracker.py">c:\users\finn\351project\p2p_fileshare\tracker.py</a></td></tr></table>
+    <p><span class="code">Module&nbsp;that&nbsp;tracks&nbsp;downloads,&nbsp;matching&nbsp;peers&nbsp;together</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="socket.html">socket</a><br>
+</td><td class="multicolumn"><a href="sys.html">sys</a><br>
+</td><td class="multicolumn"><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn">
+ <dl><dt><a name="-cleanup_seeders"><strong>cleanup_seeders</strong></a>()</dt><dd><span class="code">Periodically&nbsp;remove&nbsp;seeders&nbsp;that&nbsp;haven't&nbsp;been&nbsp;heard&nbsp;from&nbsp;in&nbsp;a&nbsp;while</span></dd></dl>
+ <dl><dt><a name="-discover_peers"><strong>discover_peers</strong></a>()</dt><dd><span class="code">Listen&nbsp;for&nbsp;peers&nbsp;broadcasting&nbsp;the&nbsp;files&nbsp;they&nbsp;have/want</span></dd></dl>
+ <dl><dt><a name="-generate_metainfo"><strong>generate_metainfo</strong></a>(file_path)</dt><dd><span class="code">Given&nbsp;a&nbsp;base&nbsp;file,&nbsp;generate&nbsp;a&nbsp;.torrent&nbsp;file&nbsp;containing&nbsp;the&nbsp;metainfo<br>
+file_path:&nbsp;path&nbsp;of&nbsp;base&nbsp;file</span></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>(file)</dt><dd><span class="code">Main&nbsp;function&nbsp;that&nbsp;creates&nbsp;threads&nbsp;for&nbsp;discovery&nbsp;and&nbsp;cleanup,&nbsp;<br>
+and&nbsp;runs&nbsp;main&nbsp;loop&nbsp;where&nbsp;peers&nbsp;are&nbsp;matched</span></dd></dl>
+ <dl><dt><a name="-match_peers"><strong>match_peers</strong></a>(dl_peer)</dt><dd><span class="code">Match&nbsp;a&nbsp;peer&nbsp;to&nbsp;another&nbsp;peer&nbsp;that&nbsp;has&nbsp;file&nbsp;parts&nbsp;it&nbsp;needs<br>
+dl_peer:&nbsp;peer&nbsp;searching&nbsp;for&nbsp;parts&nbsp;of&nbsp;the&nbsp;file</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>TIMEOUT_MAX</strong> = 4294967.0<br>
+<strong>dl_peers</strong> = []<br>
+<strong>dling_peers</strong> = []<br>
+<strong>file_pieces</strong> = {}<br>
+<strong>p_len</strong> = 8<br>
+<strong>peer_timeout</strong> = 60<br>
+<strong>seeders</strong> = {}<br>
+<strong>sock</strong> = &lt;socket.socket fd=404, family=2, type=2, proto=0, laddr=('127.0.0.1', 9000)&gt;<br>
+<strong>tr_port</strong> = 9000<br>
+<strong>wait</strong> = 2</td></tr></table>
+</body></html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module peer</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">peer</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cfinn%5C351project%5Cp2p_fileshare%5Cpeer.py">c:\users\finn\351project\p2p_fileshare\peer.py</a></td></tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="ast.html">ast</a><br>
+<a href="re.html">re</a><br>
+</td><td class="multicolumn"><a href="socket.html">socket</a><br>
+<a href="sys.html">sys</a><br>
+</td><td class="multicolumn"><a href="threading.html">threading</a><br>
+<a href="time.html">time</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-broadcast"><strong>broadcast</strong></a>(server_ip, server_port, port, filename, sock)</dt><dd><span class="code">Function&nbsp;that&nbsp;broadcasts&nbsp;the&nbsp;current&nbsp;peers&nbsp;file&nbsp;contents<br>
+Params:<br>
+listenPort:&nbsp;Port&nbsp;of&nbsp;the&nbsp;current&nbsp;Peer<br>
+udp_sock:&nbsp;UDP&nbsp;socket&nbsp;used&nbsp;to&nbsp;receive&nbsp;messages</span></dd></dl>
+ <dl><dt><a name="-checksum"><strong>checksum</strong></a>(data)</dt><dd><span class="code">compiutes&nbsp;checksum<br>
+data:&nbsp;data&nbsp;to&nbsp;compute&nbsp;checksum&nbsp;on<br>
+returns:&nbsp;checksum&nbsp;of&nbsp;data</span></dd></dl>
+ <dl><dt><a name="-connectToPeer"><strong>connectToPeer</strong></a>(filename, pieces, peer_port)</dt><dd><span class="code">Function&nbsp;that&nbsp;begins&nbsp;file&nbsp;exchange&nbsp;with&nbsp;discovered&nbsp;peers<br>
+Params:<br>
+filename:&nbsp;Name&nbsp;of&nbsp;movie&nbsp;being&nbsp;torrented<br>
+pieces:&nbsp;Size&nbsp;of&nbsp;the&nbsp;overall&nbsp;movie<br>
+peer_port:&nbsp;port&nbsp;of&nbsp;the&nbsp;current&nbsp;peer&nbsp;we&nbsp;are&nbsp;in</span></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>(port, metainfo, file)</dt><dd><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;Main&nbsp;Function&nbsp;that&nbsp;starts&nbsp;all&nbsp;threads&nbsp;needed&nbsp;by&nbsp;the&nbsp;Peers.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;Three&nbsp;threads&nbsp;are:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1)Broadcast&nbsp;to&nbsp;the&nbsp;tracker&nbsp;the&nbsp;current&nbsp;contents&nbsp;of&nbsp;my&nbsp;file&nbsp;<br>
+`&nbsp;&nbsp;&nbsp;2)Listen&nbsp;to&nbsp;messages&nbsp;coming&nbsp;from&nbsp;the&nbsp;tracker&nbsp;telling&nbsp;me&nbsp;the&nbsp;(port,&nbsp;IP)&nbsp;of&nbsp;peers&nbsp;I&nbsp;need<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3)Start&nbsp;Listening&nbsp;for&nbsp;incoming&nbsp;TCP&nbsp;requests&nbsp;from&nbsp;other&nbsp;peers&nbsp;requesting&nbsp;file&nbsp;chucks.</span></dd></dl>
+ <dl><dt><a name="-parse_torrent_file"><strong>parse_torrent_file</strong></a>(metainfo)</dt><dd><span class="code">Parse_torrent_file&nbsp;is&nbsp;a&nbsp;function&nbsp;that&nbsp;reads&nbsp;in&nbsp;the&nbsp;metainfo&nbsp;file&nbsp;<br>
+and&nbsp;builds&nbsp;a&nbsp;dictionary&nbsp;of&nbsp;configs&nbsp;needed&nbsp;to&nbsp;start&nbsp;the&nbsp;torrent<br>
+&nbsp;<br>
+Params:<br>
+Metainfo:&nbsp;Dictionary&nbsp;within&nbsp;a&nbsp;dictionary&nbsp;that&nbsp;tells&nbsp;me&nbsp;where&nbsp;to&nbsp;find&nbsp;the&nbsp;tracker&nbsp;<br>
+as&nbsp;well&nbsp;as&nbsp;general&nbsp;params&nbsp;for&nbsp;the&nbsp;torrent&nbsp;like&nbsp;piece&nbsp;Size&nbsp;and&nbsp;Indexes.</span></dd></dl>
+ <dl><dt><a name="-receiveFromPeers"><strong>receiveFromPeers</strong></a>(listenPort, p_len)</dt><dd><span class="code">Function&nbsp;that&nbsp;opens&nbsp;a&nbsp;TCP&nbsp;connection&nbsp;and&nbsp;exchanges&nbsp;file&nbsp;chucks&nbsp;with&nbsp;other&nbsp;peers<br>
+Params:<br>
+listenPort:&nbsp;New&nbsp;port&nbsp;currently&nbsp;used&nbsp;by&nbsp;the&nbsp;Peer&nbsp;to&nbsp;listen&nbsp;to&nbsp;requests&nbsp;<br>
+P_len:&nbsp;Packet&nbsp;Length&nbsp;Used&nbsp;throughout&nbsp;the&nbsp;whole&nbsp;torrent</span></dd></dl>
+ <dl><dt><a name="-receiveFromTracker"><strong>receiveFromTracker</strong></a>(listenPort, udp_sock)</dt><dd><span class="code">Function&nbsp;that&nbsp;receives&nbsp;packets&nbsp;from&nbsp;the&nbsp;tracker<br>
+Params:<br>
+listenPort:&nbsp;Port&nbsp;of&nbsp;the&nbsp;current&nbsp;Peer<br>
+udp_sock:&nbsp;UDP&nbsp;socket&nbsp;used&nbsp;to&nbsp;receive&nbsp;messages</span></dd></dl>
+ <dl><dt><a name="-startBroadcast"><strong>startBroadcast</strong></a>(server_ip, server_port, port, fileName, sock)</dt><dd><span class="code">Function&nbsp;starts&nbsp;the&nbsp;thread&nbsp;to&nbsp;start&nbsp;broadcasting&nbsp;to&nbsp;the&nbsp;tracker<br>
+&nbsp;<br>
+Params:<br>
+server_ip&nbsp;=&nbsp;tracker&nbsp;IP&nbsp;<br>
+server_port&nbsp;=&nbsp;tracker&nbsp;port<br>
+port&nbsp;=&nbsp;port&nbsp;number&nbsp;for&nbsp;the&nbsp;current&nbsp;peer<br>
+filename&nbsp;=&nbsp;name&nbsp;of&nbsp;the&nbsp;movie&nbsp;you&nbsp;want&nbsp;to&nbsp;torrent<br>
+sock&nbsp;=&nbsp;socket&nbsp;initialized&nbsp;in&nbsp;main</span></dd></dl>
+ <dl><dt><a name="-startListeningForPeers"><strong>startListeningForPeers</strong></a>(port, p_len)</dt><dd><span class="code">Function&nbsp;starts&nbsp;the&nbsp;thread&nbsp;to&nbsp;listen&nbsp;for&nbsp;imcoming&nbsp;request&nbsp;from&nbsp;other&nbsp;peers<br>
+&nbsp;<br>
+Params:<br>
+Port:&nbsp;Port&nbsp;of&nbsp;the&nbsp;current&nbsp;Peer<br>
+P_len:&nbsp;Packet&nbsp;Length&nbsp;Used&nbsp;throughout&nbsp;the&nbsp;whole&nbsp;torrent</span></dd></dl>
+ <dl><dt><a name="-startListeningForTracker"><strong>startListeningForTracker</strong></a>(port, sock)</dt><dd><span class="code">Function&nbsp;starts&nbsp;the&nbsp;thread&nbsp;to&nbsp;listen&nbsp;for&nbsp;imcoming&nbsp;messages&nbsp;from&nbsp;the&nbsp;tracker<br>
+&nbsp;<br>
+Params:<br>
+Port:&nbsp;Port&nbsp;of&nbsp;the&nbsp;current&nbsp;Peer<br>
+Sock:&nbsp;UDP&nbsp;socket&nbsp;that&nbsp;was&nbsp;created&nbsp;in&nbsp;the&nbsp;main&nbsp;method</span></dd></dl>
+ <dl><dt><a name="-writeToFile"><strong>writeToFile</strong></a>(filename, data_to_write, port)</dt><dd><span class="code">Function&nbsp;that&nbsp;write&nbsp;the&nbsp;file&nbsp;to&nbsp;the&nbsp;directory&nbsp;once&nbsp;its&nbsp;confirmed&nbsp;<br>
+file&nbsp;download&nbsp;is&nbsp;complete<br>
+Params:<br>
+filename:&nbsp;name&nbsp;of&nbsp;movie&nbsp;<br>
+data_to_write:&nbsp;Content&nbsp;downloaded&nbsp;via&nbsp;P2P&nbsp;<br>
+port:&nbsp;Port&nbsp;of&nbsp;the&nbsp;current&nbsp;peer</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>host</strong> = '127.0.0.1'<br>
+<strong>incoming_peers_to_connect</strong> = []<br>
+<strong>keep_downloading_file</strong> = True<br>
+<strong>keep_seeding</strong> = True<br>
+<strong>received_file</strong> = ''<br>
+<strong>received_index</strong> = []</td></tr></table>
+</body></html>
