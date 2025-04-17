@@ -1,4 +1,8 @@
+"""
+Module that tracks downloads, matching peers together
+"""
 import os
+import sys
 import time
 import socket
 from threading import *
@@ -17,6 +21,10 @@ wait = 2
 
 
 def generate_metainfo(file_path):
+    """
+    Given a base file, generate a .torrent file containing the metainfo
+    file_path: path of base file
+    """
     # get relevant info from base file
     file = os.path.basename(file_path)
     file_name, file_ext = os.path.splitext(file)
@@ -35,6 +43,9 @@ def generate_metainfo(file_path):
 
 
 def discover_peers():
+    """
+    Listen for peers broadcasting the files they have/want
+    """
     while 1:
         # receive broadcasts from peers
         pkt, sender = sock.recvfrom(1024)
@@ -58,6 +69,9 @@ def discover_peers():
 
 
 def cleanup_seeders():
+    """
+    Periodically remove seeders that haven't been heard from in a while
+    """
     while 1:
         print(f'Cleaning seeders...')
         # every 30s, check for 'dead' peers
@@ -71,6 +85,10 @@ def cleanup_seeders():
 
 
 def match_peers(dl_peer):
+    """
+    Match a peer to another peer that has file parts it needs
+    dl_peer: peer searching for parts of the file
+    """
     dl_port, dl_name, dl_recv, dl_sender = dl_peer
     print(f'{dl_port} seaching for {dl_name}...')
     # file pieces that dl_peer needs
@@ -93,9 +111,13 @@ def match_peers(dl_peer):
             break
     
 
-def main():
+def main(file):
+    """
+    Main function that creates threads for discovery and cleanup, 
+    and runs main loop where peers are matched
+    """
     # generate metainfo file
-    generate_metainfo('spiderman.txt')
+    generate_metainfo(file)
 
     # start thread to discover new peers
     discover_thread = Thread(target=discover_peers, daemon=True)
@@ -122,4 +144,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        print('Usage: python tracker.py <file>')
+        sys.exit(1)
+    main(sys.argv[1])
