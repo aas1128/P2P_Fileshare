@@ -5,13 +5,22 @@ import ast
 import threading
 import time 
 
-host = "127.0.0.1"
-received_file = ""
-received_index = []
-incoming_peers_to_connect = []
-keep_downloading_file = True 
-keep_seeding = True
+#Global Configuration Variables
+host = "127.0.0.1" #Local host for all computers
+received_file = "" #Represent the file as a empty string on initilization
+received_index = [] #Track indexes of the packets in the string
+incoming_peers_to_connect = [] #List of Peers which contain file Chucks I need 
+keep_downloading_file = True # Flag to keep while loops iterating until download is over
+keep_seeding = True #Flag to keep seeding to other peers until terminated by user
+
 def main(port, metainfo, file):
+    """
+    Main Function that starts all threads needed by the Peers.
+    The Three threads are:
+    1)Broadcast to the tracker the current contents of my file 
+`   2)Listen to messages coming from the tracker telling me the (port, IP) of peers I need
+    3)Start Listening for incoming TCP requests from other peers requesting file chucks. 
+    """
     print(port, metainfo, file)
     global received_file, received_index
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
@@ -34,6 +43,7 @@ def main(port, metainfo, file):
         pieces = torrent_file["info"]["pieces"]
         pieces = [int(x) for x in pieces]
 
+        #Read in the file
         if file:
             # the peer has the file
             with open(file, 'r') as f:
@@ -60,6 +70,14 @@ def main(port, metainfo, file):
 
 
 def parse_torrent_file(metainfo):
+    """
+    Parse_torrent_file is a function that reads in the metainfo file 
+    and builds a dictionary of configs needed to start the torrent
+
+    Params:
+    Metainfo: Dictionary within a dictionary that tells me where to find the tracker 
+    as well as general params for the torrent like piece Size and Indexes. 
+    """
     try: 
             with open(metainfo, 'r') as file:
             # Read the entire file
@@ -79,22 +97,52 @@ def parse_torrent_file(metainfo):
 
 
 def startListeningForTracker(port, sock):
+    """
+    Function starts the thread to listen for imcoming messages from the tracker
+
+    Params:
+    Port: Port of the current Peer
+    Sock: UDP socket that was created in the main method
+    """
     trackerListen_thread = threading.Thread(target=receiveFromTracker, args=(port, sock), daemon=True)
     # Start the thread
     trackerListen_thread.start()
 
 def startListeningForPeers(port, p_len):
+    """
+    Function starts the thread to listen for imcoming request from other peers
+
+    Params:
+    Port: Port of the current Peer
+    P_len: Packet Length Used throughout the whole torrent
+    """
     peerListen_thread = threading.Thread(target=receiveFromPeers, args=(port, p_len), daemon=True)
     # Start the thread
     peerListen_thread.start()
 
 def startBroadcast(server_ip, server_port, port , fileName, sock):
+    """
+    Function starts the thread to start broadcasting to the tracker
+
+    Params:
+    server_ip = tracker IP 
+    server_port = tracker port
+    port = port number for the current peer
+    filename = name of the movie you want to torrent
+    sock = socket initialized in main
+    """
     broadcast_thread = threading.Thread(target=broadcast, args=(server_ip, server_port, port, fileName, sock), daemon=True)
         # Start the thread
     broadcast_thread.start()
 
 
 def receiveFromPeers(listenPort, p_len):
+    """
+    Function that opens a TCP connection and exchanges file chucks with other peers
+    Params:
+    listenPort: New port currently used by the Peer to listen to requests 
+    P_len: Packet Length Used throughout the whole torrent
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_sock:
         try:
             tcp_sock.bind((host, listenPort))
@@ -122,6 +170,12 @@ def receiveFromPeers(listenPort, p_len):
 
 
 def receiveFromTracker(listenPort, udp_sock):
+    """
+    Function that receives packets from the tracker
+    Params:
+    listenPort: Port of the current Peer
+    udp_sock: UDP socket used to receive messages
+    """
     # udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # udp_sock.bind((host, listenPort))
@@ -139,6 +193,12 @@ def receiveFromTracker(listenPort, udp_sock):
 
 
 def broadcast(server_ip, server_port, port, filename, sock):
+    """
+    Function that broadcasts the current peers file contents
+    Params:
+    listenPort: Port of the current Peer
+    udp_sock: UDP socket used to receive messages
+    """
     global keep_seeding
     #Broadbast packet looks like: Port of Peer thats broadcasting|File name(spiderman)|received_indexs 
     try:
@@ -154,6 +214,13 @@ def broadcast(server_ip, server_port, port, filename, sock):
 
 
 def connectToPeer(filename, pieces, peer_port):
+    """
+    Function that begins file exchange with discovered peers
+    Params:
+    filename: Name of movie being torrented
+    pieces: Size of the overall movie
+    peer_port: port of the current peer we are in
+    """
     global received_file, keep_downloading_file
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_sock:
@@ -209,6 +276,14 @@ def connectToPeer(filename, pieces, peer_port):
 
 
 def writeToFile(filename, data_to_write, port):
+    """
+    Function that write the file to the directory once its confirmed 
+    file download is complete
+    Params:
+    filename: name of movie 
+    data_to_write: Content downloaded via P2P 
+    port: Port of the current peer
+    """
     print('Writing file...')
     with open(f'{port}_{filename}', 'w') as f:
         f.write(data_to_write)
